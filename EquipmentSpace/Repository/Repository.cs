@@ -12,12 +12,15 @@ namespace EquipmentSpace.Repository
             _context = context;
             _dbSet = _context.Set<T>();
         }
-        public async Task<IEnumerable<T>> GetAllAsync() => (IEnumerable<T>)await _dbSet.AsNoTracking().ToListAsync();
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return (IEnumerable<T>)await _dbSet.AsNoTracking().ToListAsync();
+        }
 
-        public T Read(Func<T, bool> predicate) =>           //read entity
+        public T Read(Func<T, bool> predicate) =>          
             _dbSet.AsNoTracking().Where<T>(predicate).FirstOrDefault();
         
-        public async Task CreateAsync(T entity)          //create entity
+        public async Task CreateAsync(T entity)         
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
