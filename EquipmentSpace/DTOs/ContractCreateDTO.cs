@@ -2,8 +2,8 @@
 {
     public class ContractCreateDTO
     {
-        public int IdSpace { get; set; }
-        public int IdEquipment { get; set; }
-        public int Count { get; set; }
+        public string SpaceCode { get; set; }
+        public string EquipmentCode { get; set; }
+        public int Quantity { get; set; } = 1;
     }
 }
