@@ -17,8 +17,8 @@ namespace EquipmentSpace.Controllers
             _contractService = contractService;
         }
 
-        [HttpGet("all")]
-        public async Task<ActionResult<IEnumerable<Contract>>> GetAllContracts() 
+        [HttpGet("list")]
+        public async Task<ActionResult<IEnumerable<ContractShowDTO>>> GetAllContracts() 
         {
             try
             {
@@ -31,11 +31,11 @@ namespace EquipmentSpace.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult> CreateContract(ContractCreateDTO contract)
+        public async Task<ActionResult> CreateContractAsync(ContractCreateDTO contract)
         {
             try
             {
-                await _contractService.CreateContract(contract);
+                await _contractService.CreateContractAsync(contract);
                 return Ok("Contract was created . . .");
             }
             catch(Exception ex)
