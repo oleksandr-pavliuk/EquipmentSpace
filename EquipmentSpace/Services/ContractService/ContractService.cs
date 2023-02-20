@@ -3,32 +3,49 @@ using EquipmentSpace.Exceptions;
 using EquipmentSpace.Models;
 using EquipmentSpace.Repository;
 using EquipmentSpace.Services.SquareVerificationService;
+using Microsoft.EntityFrameworkCore;
 
 namespace EquipmentSpace.Services.ContractService
 {
     public class ContractService : IContractService
     {
-        private readonly IRepository<Contract> _repository;
+        private readonly IRepository<Contract> _contractRepository;
+        private readonly IRepository<Space> _spaceRepository;
+        private readonly IRepository<Equipment> _equipmentRepository;
         private readonly ISquareVerificationService _squareVerificationService;
-        public ContractService(IRepository<Contract> repository, ISquareVerificationService squareVerificationService) 
+        public ContractService(IRepository<Contract> contractRepository, IRepository<Space> spaceRepository, IRepository<Equipment> equipmentRepository, ISquareVerificationService squareVerificationService) 
         {
-            _repository = repository;
+            _contractRepository = contractRepository;
+            _spaceRepository = spaceRepository;
+            _equipmentRepository = equipmentRepository;
             _squareVerificationService = squareVerificationService;
         }
-        public async Task<IEnumerable<Contract>> GetContractsAsync()
+        public async Task<IEnumerable<ContractShowDTO>> GetContractsAsync()
         {
-            return await _repository.GetAllAsync();
+
+            var contracts = await _contractRepository.GetAllAsync();
+            List<ContractShowDTO> contractsShow = new List<ContractShowDTO>();
+            Space space = new Space();
+            Equipment equipment = new Equipment();
+            foreach(var item in contracts)
+            {
+                space = _spaceRepository.Read(s => s.Code == item.SpaceCode);
+                equipment = _equipmentRepository.Read(e => e.Code == item.EquipmentCode);
+                contractsShow.Add(new ContractShowDTO { SpaceName = space.Name, EquipmentName = equipment.Name, Quantity = item.Quantity});
+            }
+            return contractsShow;
         }
-        public async Task CreateContract(ContractCreateDTO contract)
+        public async Task CreateContractAsync(ContractCreateDTO contract)
         {
-            bool verified = _squareVerificationService.VerifySquare(contract.IdSpace, contract.IdEquipment, contract.Count);
+            bool verified = _squareVerificationService.VerifySquare(contract.SpaceCode, contract.EquipmentCode, contract.Quantity);
 
             if (verified)
             {
-                await _repository.CreateAsync(new Contract()
+                await _contractRepository.CreateAsync(new Contract()
                 {
-                    IdEquipment = contract.IdEquipment,
-                    IdSpace = contract.IdSpace
+                    EquipmentCode = contract.EquipmentCode,
+                    SpaceCode = contract.SpaceCode,
+                    Quantity = contract.Quantity
                 });
             }
             else throw new SpaceException(ExceptionMessage.spaceMessage);

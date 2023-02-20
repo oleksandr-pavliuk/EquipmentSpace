@@ -2,6 +2,6 @@
 {
     public interface ISquareVerificationService
     {
-        bool VerifySquare(int idSpace, int idEquipment, int count);
+        bool VerifySquare(string spaceCode, string equipmentCode, int quantity);
     }
 }

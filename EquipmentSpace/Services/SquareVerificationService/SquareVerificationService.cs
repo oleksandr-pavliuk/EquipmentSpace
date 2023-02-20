@@ -13,13 +13,13 @@ namespace EquipmentSpace.Services.SquareVerificationService
              _spaceRepository = spaceRepository;
             _equipmentRepository = equipmentRepository;
         }
-        public bool VerifySquare(int idSpace, int idEquipment, int count)
+        public bool VerifySquare(string spaceCode, string equipmentCode, int quantity)
         {
             Space space = new Space();
             Equipment equipment = new Equipment();
             try
             {
-                space = _spaceRepository.Read(e => e.Id == idSpace);
+                space = _spaceRepository.Read(e => e.Code == spaceCode);
             }
             catch(Exception ex)
             {
@@ -27,14 +27,14 @@ namespace EquipmentSpace.Services.SquareVerificationService
             }
             try
             {
-                equipment = _equipmentRepository.Read(e => e.Id == idEquipment);
+                equipment = _equipmentRepository.Read(e => e.Code == equipmentCode);
             }
             catch(Exception ex)
             {
                 throw new NotFoundException(ExceptionMessage.equipmentNotFoundMessage);
             }
 
-            return ((equipment.Square * count < space.Square) ? true : false);
+            return ((equipment.Square * quantity <= space.Square) ? true : false);
         }
     }
 }
