@@ -1,6 +1,8 @@
-﻿using EquipmentSpace.DTOs;
+﻿using EquipmentSpace.Auth;
+using EquipmentSpace.DTOs;
 using EquipmentSpace.Models;
 using EquipmentSpace.Services.ContractService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +20,7 @@ namespace EquipmentSpace.Controllers
         }
 
         [HttpGet("list")]
+        [ApiKey]
         public async Task<ActionResult<IEnumerable<ContractShowDTO>>> GetAllContracts() 
         {
             try
@@ -31,12 +34,13 @@ namespace EquipmentSpace.Controllers
         }
 
         [HttpPost("create")]
+        [ApiKey]
         public async Task<ActionResult> CreateContractAsync(ContractCreateDTO contract)
         {
             try
             {
                 await _contractService.CreateContractAsync(contract);
-                return Ok("Contract was created . . .");
+                return Ok("Contract was created");
             }
             catch(Exception ex)
             {
